@@ -1,6 +1,8 @@
 # Morse Code Converter
 
-A text-based Python CLI application that converts strings into Morse code.
+A modular Python CLI application that converts plain text into Morse code.
+
+---
 
 ## Features
 
@@ -10,9 +12,26 @@ A text-based Python CLI application that converts strings into Morse code.
 - Warns about unsupported characters
 - Clean modular structure
 
+---
+
+## Project Structure
+
+```
+morse-code-converter_mk1/
+├── main.py            # CLI entry point (handles user interaction)
+├── converter.py       # Core conversion logic (text → Morse)
+├── morse_data.py      # Morse dictionary mapping (A–Z, 0–9)
+├── utils.py           # Helper functions (normalization & validation)
+├── requirements.txt   # Project dependencies
+├── .gitignore         # Files ignored by Git
+└── README.md          # Project documentation
+```
+
+---
+
 ## How to Run
 
-From inside the `morse_converter` directory:
+From inside the `morse-code-converter_mk1` directory:
 
 ```bash
 python main.py
