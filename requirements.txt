@@ -1,3 +1,3 @@
-# Morse Code Converter
-# Version 1 – No external dependencies required.
-# This project uses only Python standard library modules.
+# Morse Code Converter — no third-party dependencies.
+# Standard library only; Python 3.10+ required for X | Y union types
+# and tuple[...] generic hints used in the advanced build.
