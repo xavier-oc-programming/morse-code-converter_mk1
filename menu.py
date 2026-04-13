@@ -36,6 +36,7 @@ def main() -> None:
             elif choice == "2":
                 path = ROOT / "advanced" / "main.py"
                 os.system("cls" if os.name == "nt" else "clear")
+                print(LOGO)
                 subprocess.run([sys.executable, str(path)], cwd=str(path.parent))
             elif choice == "q":
                 break
