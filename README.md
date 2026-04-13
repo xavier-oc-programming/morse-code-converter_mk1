@@ -42,16 +42,18 @@ Both builds share the same prompt interface.
 | Input | Result |
 |---|---|
 | Any text (letters, digits, spaces) | Prints the Morse code translation |
-| `exit` | Prints "Goodbye." and quits |
+| `exit` | Prints "Goodbye." and returns to `menu.py` |
 | Empty / whitespace only | Prints "Please enter some text." |
 | Text with unsupported chars | Converts supported chars, warns about the rest |
+| `Ctrl+C` (inside a build) | Prints "Goodbye." and returns to `menu.py` |
+| `Ctrl+C` (inside `menu.py`) | Prints "Goodbye." and exits the program |
 
 **Startup banner (advanced build):**
 
 ```
 Morse Code Converter ready.
-  Enter any text at the prompt to convert it to Morse code.
-  Type 'exit' to quit.
+  Type your message and press Enter to convert it to Morse code.
+  Press ↑ (up arrow) or type 'exit' to return to menu.
 ```
 
 ---
@@ -65,7 +67,8 @@ Step-by-step description of what happens during a session:
 3. The `>>` prompt appears.
 4. User types text and presses Enter.
    - Empty input → "Please enter some text." → prompt again.
-   - `exit` → "Goodbye." → program ends.
+   - `exit` → "Goodbye." → returns to `menu.py`.
+   - `Ctrl+C` → "Goodbye." → returns to `menu.py`.
    - Any other input → normalized (stripped + uppercased) → converted.
 5. Morse output is printed, one line indented.
 6. If any characters were skipped (e.g. `!`, `?`, `@`), a warning lists them.
@@ -116,13 +119,15 @@ anywhere else in the codebase.
 ```
 python menu.py
 │
-├── 1 ──→ subprocess: original/main.py   (blocks until user types 'exit')
+├── 1 ──→ clears screen → subprocess: original/main.py   (blocks until exit or Ctrl+C)
 │         └── returns to menu.py loop
 │
-├── 2 ──→ subprocess: advanced/main.py   (blocks until user types 'exit')
+├── 2 ──→ clears screen → subprocess: advanced/main.py   (blocks until exit or Ctrl+C)
 │         └── returns to menu.py loop
 │
-└── q ──→ breaks the while loop → menu.py exits
+├── q ──→ breaks the while loop → menu.py exits
+│
+└── Ctrl+C ──→ KeyboardInterrupt caught → "Goodbye." → menu.py exits
 ```
 
 ### In-app flow (both builds)
@@ -139,7 +144,9 @@ python menu.py
            │                                                        │
            ├─ empty / whitespace ──→ "Please enter some text."  ───┘
            │
-           ├─ "exit"  ────────────→ "Goodbye."  ──→  program ends
+           ├─ "exit"   ───────────→ "Goodbye."  ──→  returns to menu
+           │
+           ├─ Ctrl+C  ───────────→ "Goodbye."  ──→  returns to menu
            │
            └─ any text ──→ normalize ──→ convert
                                 │
@@ -242,11 +249,13 @@ Full prompt → outcome flow for a single session (advanced build):
  python advanced/main.py
          │
          ▼
- ┌───────────────────────────────────┐
- │  Morse Code Converter ready.      │
- │    Enter any text…                │
- │    Type 'exit' to quit.           │
- └───────────────────────────────────┘
+ ┌────────────────────────────────────────────┐
+ │  Morse Code Converter ready.               │
+ │    Type your message and press Enter to    │
+ │    convert it to Morse code.               │
+ │    Press ↑ or type 'exit' to return to     │
+ │    menu.                                   │
+ └────────────────────────────────────────────┘
          │
          ▼
  >> hello world
@@ -313,9 +322,11 @@ The menu reappears after a subprocess exits by looping back to the top of the `w
 A recursive call would grow the call stack with every build launch; the loop has constant
 stack depth regardless of how many times the user switches builds.
 
-**Console cleared before every menu render.**
-`os.system("cls" if os.name == "nt" else "clear")` runs at the top of each loop iteration.
-The user always sees a clean menu screen — no visual noise from the previous build's output.
+**Console cleared before every menu render and before launching a build.**
+`os.system("cls" if os.name == "nt" else "clear")` runs at the top of each loop iteration
+so the menu is always clean. It also runs immediately before each `subprocess.run()` call so
+the build starts on a blank screen — the "Select a build" menu disappears and the first thing
+the user sees is the build's own startup banner.
 
 **`MorseConverter._normalize` and `_find_unsupported` are private.**
 The only public surface is `convert()`. Internal helpers are prefixed with `_` so callers

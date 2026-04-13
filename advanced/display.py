@@ -102,7 +102,7 @@ class Display:
     def show_startup(self) -> None:
         """Print the startup banner and command reference."""
         print(f"{APP_TITLE} ready.")
-        print(f"  Enter any text at the prompt to convert it to Morse code.")
+        print(f"  Type your message and press Enter to convert it to Morse code.")
         print(f"  Press ↑ (up arrow) or type '{CMD_EXIT}' to return to menu.\n")
 
     def prompt_text(self) -> str | None:
