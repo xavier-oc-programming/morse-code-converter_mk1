@@ -19,22 +19,25 @@ def main() -> None:
     display = Display()
     display.show_startup()
 
-    while True:
-        user_input = display.prompt_text()
+    try:
+        while True:
+            user_input = display.prompt_text()
 
-        if user_input.lower() == CMD_EXIT:
-            display.show_goodbye()
-            break
+            if user_input.lower() == CMD_EXIT:
+                display.show_goodbye()
+                break
 
-        if not user_input:
-            display.show_invalid()
-            continue
+            if not user_input:
+                display.show_invalid()
+                continue
 
-        morse, unsupported = converter.convert(user_input)
-        display.show_result(morse)
+            morse, unsupported = converter.convert(user_input)
+            display.show_result(morse)
 
-        if unsupported:
-            display.show_warning(unsupported)
+            if unsupported:
+                display.show_warning(unsupported)
+    except KeyboardInterrupt:
+        display.show_goodbye()
 
 
 if __name__ == "__main__":
