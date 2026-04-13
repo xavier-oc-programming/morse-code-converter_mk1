@@ -23,6 +23,10 @@ def main() -> None:
         while True:
             user_input = display.prompt_text()
 
+            if user_input is None:              # up arrow → return to menu
+                display.show_goodbye()
+                break
+
             if user_input.lower() == CMD_EXIT:
                 display.show_goodbye()
                 break
